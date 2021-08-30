@@ -137,7 +137,7 @@ class Table extends Component {
     /*Удаление данных из БД */
     async RemoveData(){
         const response = await axios.delete("http://localhost:17133/api/Employee/DeleteBulk");
-        alert("Datas removed successfully ");
+        alert("Data removed successfully ");
     }
 }
 export default Table;
