@@ -33,6 +33,7 @@ class Table extends Component {
                 <div className="rolling">
                     Rolling Retention 7 Day = {this.state.rollingRetention} %
                 </div>
+                {/* /*Скелет графика*/}
                 <div>
                     <Bar data={{
                         labels: this.state.labels,
@@ -68,6 +69,7 @@ class Table extends Component {
         )
     };
 
+    /* Добавление данных в БД */
     /*  Не получилось сделать динамическую подгрузку строк, поэтому каждый элемент добавляется отдельно */
     async insertItemList() {
         let dataData = document.getElementById('111')
@@ -112,6 +114,8 @@ class Table extends Component {
         });
         alert("Data inserted successfully");
     }
+
+    /*Построение графика и рассчёт Rolling Retention */
     async GetChart() {
         this.setState({ items: [] });
         const response = await axios.get("http://localhost:17133/api/Employee/GetChart");
@@ -129,6 +133,8 @@ class Table extends Component {
         num = response2.data;
         this.setState({rollingRetention : num});
     }
+
+    /*Удаление данных из БД */
     async RemoveData(){
         const response = await axios.delete("http://localhost:17133/api/Employee/DeleteBulk");
         alert("Datas removed successfully ");
