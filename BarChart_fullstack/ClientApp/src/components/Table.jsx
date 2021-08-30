@@ -8,11 +8,10 @@ class Table extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            dateRegistration: new Date(),
-            dateActivity: new Date(),
             chartData: {},
             data: [],
-            labels: []
+            labels: [],
+            rollingRetention: null,
         }
 
     }
@@ -28,15 +27,18 @@ class Table extends Component {
                     </thead>
                     <BodyTable />
                 </table>
-                <button type="submit" className="buttonInsert btn btn-outline-primary mr-4" onClick={this.insertItemList.bind(this)}>Save</button>
-                {/* <button type="submit" className="buttonInsert btn btn-outline-primary" onClick={this.getData.bind(this)}>Get Data</button> */}
-                <button type="submit" className="buttonInsert" onClick={this.GetChart.bind(this)}>Calculate</button>
+                <button type="submit" className="buttonInsert btn btn-outline-primary mr-4 mb-4" onClick={this.insertItemList.bind(this)}>Save</button>
+                <button type="submit" className="buttonInsert btn btn-outline-primary mr-4 mb-4" onClick={this.GetChart.bind(this)}>Calculate</button>
+                <button type="submit" className="buttonInsert btn btn-outline-primary mr-4 mb-4" onClick={this.RemoveData.bind(this)}>Remove Data</button>
+                <div className="rolling">
+                    Rolling Retention 7 Day = {this.state.rollingRetention} %
+                </div>
                 <div>
                     <Bar data={{
                         labels: this.state.labels,
                         datasets: [
                             {
-                                label: "Duration",
+                                label: "Duration Days Live",
                                 data: this.state.data,
                                 backgroundColor: [
                                     'rgba(255, 99, 132, 0.2)',
@@ -61,6 +63,7 @@ class Table extends Component {
                     }
                     />
                 </div>
+                
             </div>
         )
     };
@@ -69,10 +72,8 @@ class Table extends Component {
     async insertItemList() {
         let dataData = document.getElementById('111')
         let dataData1 = document.getElementById('222')
-        this.setState({dateRegistration : dataData, dateLastActivity:dataData1})
-        console.log(JSON.stringify(dataData.value), JSON.stringify(dataData1.value))
         
-        /* let dataData2 = document.getElementById('333')
+        let dataData2 = document.getElementById('333')
         let dataData3 = document.getElementById('444')
 
         let dataData4 = document.getElementById('555')
@@ -82,37 +83,18 @@ class Table extends Component {
         let dataData7 = document.getElementById('888')
 
         let dataData8 = document.getElementById('999')
-        let dataData9 = document.getElementById('121') */
+        let dataData9 = document.getElementById('121') 
 
 
-        /* await axios.post("http://localhost:17133/api/Employee/Post", {
-            'dateRegistration': dataData.value,
-            'dateLastActivity': dataData1.value
-        }); */
-        /* console.log(dataData.value) */
-
-        await axios.post("http://localhost:17133/api/Employee/Post", {
+        const response = await axios.post("http://localhost:17133/api/Employee/Post", {
             'dateRegistration': dataData.value,
             'dateLastActivity': dataData1.value
         }).then(response => {
             console.log(response)
         }).catch((error=> { console.log(error.response)}));
         
-       
-        /* await fetch('http://localhost:17133/api/Employee/Post', {
-            method: 'POST',
-            mode: 'cors',
-
-            headers: {
-                'content-type': 'application/json'
-            },
-            
-            'dateRegistration': dataData.value,
-            'dateLastActivity': dataData1.value
-
-        }) */
         
-       /*  const response1 = await axios.post("http://localhost:17133/api/Employee/Post", {
+        const response1 = await axios.post("http://localhost:17133/api/Employee/Post", {
             'dateRegistration': dataData2.value,
             'dateLastActivity': dataData3.value
         });
@@ -127,48 +109,29 @@ class Table extends Component {
         const response4 = await axios.post("http://localhost:17133/api/Employee/Post", {
             'dateRegistration': dataData8.value,
             'dateLastActivity': dataData9.value
-        }); */
-        alert("Data is inserted successfully");
+        });
+        alert("Data inserted successfully");
     }
-    /* async getData() {
-        this.setState({ items: [] });
-        const response = await axios.get("http://localhost:17133/api/Employee/Get");
-        let items;
-        items = response.data.map((item) =>
-            <table className="table" >
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>Data Registration</th>
-                        <th>Date Last Activity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>{item.userID}</td>
-                        <td>{item.dateRegistration}</td>
-                        <td>{item.dateLastActivity}</td>
-                    </tr>
-                </tbody>
-            </table>
-        );
-        this.setState({ items: items });
-    } */
     async GetChart() {
         this.setState({ items: [] });
-        const response = await axios.get("http://localhost:17133/api/Employee/Get");
+        const response = await axios.get("http://localhost:17133/api/Employee/GetChart");
         let data = [];
         let labels = [];
         this.setState({ response: response });
-        let daysLag = Math.ceil(Math.abs(response.dateLastActivity - response.dateRegistration) / (1000 * 3600 * 24));
-        
         response.data.forEach((item, i) => {
-            data.push(item.dateRegistration)
+            data.push(item.num)
             labels.push(item.userID)
         })
         this.setState({ data: data, labels: labels })
         console.log(this.state)
-        let items;
+        const response2 = await axios.get("http://localhost:17133/api/Employee/GetRetention");
+        let num;
+        num = response2.data;
+        this.setState({rollingRetention : num});
+    }
+    async RemoveData(){
+        const response = await axios.delete("http://localhost:17133/api/Employee/DeleteBulk");
+        alert("Datas removed successfully ");
     }
 }
 export default Table;
