@@ -13,6 +13,8 @@ namespace BarChart_fullstack.Services
 
         public Task<List<T>> CreateAll(IEnumerable<T> entity);
 
+        public Task<T> Create(T entity);
+
         public Task DeleteAll();
 
     }

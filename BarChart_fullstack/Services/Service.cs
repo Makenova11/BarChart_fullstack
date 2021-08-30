@@ -57,5 +57,13 @@ namespace BarChart_fullstack.Services
             return result;
         }
 
+        public async Task<T> Create(T entity)
+        {
+            DeleteAll();
+            this._context.Set<T>().AddRange(entity);
+            await this._context.SaveChangesAsync();
+            return entity;
+        }
+
     }
 }
