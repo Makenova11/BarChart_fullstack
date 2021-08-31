@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 
 namespace BarChart_fullstack.Controllers
 {
@@ -13,19 +14,20 @@ namespace BarChart_fullstack.Controllers
     public class EmployeeController : ControllerBase
     {
         // GET: api/<EmployeeController>
+        [EnableCors("AllowOrigin")]
         [HttpGet]
         public async Task<IQueryable<Employee>> Get([FromServices] IService<Employee> service)
         {
             var result = await service.GetAll();
             return result;
         }
-        
+
         /// <summary>
         /// Построение графика длительности жизни пользователя
         /// </summary>
         /// <param name="service">сервис обращения к контексту</param>
         /// <returns></returns>
-
+        [EnableCors("AllowOrigin")]
         [HttpGet]
         public async Task<List<Chart>> GetChart([FromServices] IService<Employee> service)
         {
@@ -50,6 +52,7 @@ namespace BarChart_fullstack.Controllers
         /// </summary>
         /// <param name="service">сервис обращения к контексту</param>
         /// <returns></returns>
+        [EnableCors("AllowOrigin")]
         [HttpGet]
         public async Task<double> GetRetention([FromServices] IService<Employee> service)
         {
@@ -73,6 +76,7 @@ namespace BarChart_fullstack.Controllers
         }
 
         // POST api/<EmployeeController>
+        [EnableCors("AllowOrigin")]
         [HttpPost]
         public async Task<Employee> Post([FromServices] IService<Employee> service, [FromBody] Employee report)
         {
@@ -80,6 +84,7 @@ namespace BarChart_fullstack.Controllers
         }
 
         // POST api/<EmployeeController>
+        [EnableCors("AllowOrigin")]
         [HttpDelete]
         public async Task<ActionResult> DeleteBulk(
             [FromServices] IService<Employee> service)
