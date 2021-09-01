@@ -3,6 +3,7 @@ using BarChart_fullstack.Context;
 using BarChart_fullstack.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,6 +13,10 @@ namespace BarChart_fullstack.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
+        Stopwatch st = new(); //Для подсчёта обращения к БД
+        Stopwatch st2 = new();//Для подсчёта расчёта значений
+        Stopwatch st3 = new();//Для подсчёта общего врмеени выполнения
+
         // GET: api/<EmployeeController>
         [HttpGet]
         public async Task<IQueryable<Employee>> Get([FromServices] IService<Employee> service)
@@ -29,19 +34,32 @@ namespace BarChart_fullstack.Controllers
         [HttpGet]
         public async Task<List<Chart>> GetChart([FromServices] IService<Employee> service)
         {
+            st3.Start();//считаем общее время выполнения
+            st.Start();//считаем время на обращение к БД
             var result = await service.GetAll();
+            st.Stop();
             var list = result.ToList();
             int N = result.ToList().Count;
             List<Chart> chart1 = new List<Chart>(N);
+
+            st2.Start();//считаем время на подсчёт значений для графика
             for (int i = 0; i < N; i++)
             {
                 double data = (list[i].DateLastActivity - list[i].DateRegistration).TotalDays;
                 chart1.Add(new Chart()
                 {
                     userID = list[i].UserID, 
-                    num = data
+                    num = data,
+                    getDataTime = st.Elapsed.ToString(),
                 });
             }
+            st2.Stop();
+            st3.Stop();
+            chart1.Add(new Chart()
+            {
+                getActionTime = st2.Elapsed.ToString(),
+                getFullTime = st3.Elapsed.ToString()
+            });
             return chart1;
         }
 
@@ -68,7 +86,7 @@ namespace BarChart_fullstack.Controllers
                     actualCount++;
                 }
             }
-            double rollingRetention = actualCount/installedCount * 100;
+            double rollingRetention = Math.Round(actualCount / installedCount * 100, 2) ;
             return rollingRetention;
         }
 
