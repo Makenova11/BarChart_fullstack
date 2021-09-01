@@ -12,6 +12,9 @@ class Table extends Component {
             data: [],
             labels: [],
             rollingRetention: null,
+            getFullTime: "",
+            getActionTime: "",
+            getDataTime: ""
         }
 
     }
@@ -63,8 +66,13 @@ class Table extends Component {
                     }
                     }
                     />
+                </div >
+                {/*Профилирование*/} 
+                <div className="rolling">
+                <p>Время на обращение и взятие данных из БД: {this.state.getDataTime} мс.</p>
+                <p>Время на подсчёт значений для графика: {this.state.getActionTime} мс.</p>
+                <p>Общее время выполнения: {this.state.getFullTime} мс.</p>
                 </div>
-                
             </div>
         )
     };
@@ -121,13 +129,25 @@ class Table extends Component {
         const response = await axios.get("http://localhost:17133/api/Employee/GetChart");
         let data = [];
         let labels = [];
+        let getActionTime = "";
+        let getDataTime = "";
+        let getFullTime = "";
+
         this.setState({ response: response });
         response.data.forEach((item, i) => {
             data.push(item.num)
             labels.push(item.userID)
         })
-        this.setState({ data: data, labels: labels })
-        console.log(this.state)
+        getActionTime = response.data[5].getActionTime
+        getDataTime = response.data[4].getDataTime
+        getFullTime = response.data[5].getFullTime
+        this.setState({ data: data,
+             labels: labels,
+             getActionTime: getActionTime,
+             getDataTime: getDataTime,
+             getFullTime: getFullTime
+             })
+        console.log(response.data)
         const response2 = await axios.get("http://localhost:17133/api/Employee/GetRetention");
         let num;
         num = response2.data;
