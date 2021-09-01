@@ -17,35 +17,17 @@ namespace BarChart_fullstack
         {
             Configuration = configuration;
         }
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddMvc();
-            
-            services.AddCors(options =>
-            {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                    builder =>
-                    {
-                        builder.WithOrigins("http://makenova.test.ru")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
-                    });
-                options.AddPolicy("MyAllowSubdomainPolicy",
-                    builder =>
-                    {
-                        builder.WithOrigins("http://makenova.test.ru")
-                            .SetIsOriginAllowedToAllowWildcardSubdomains();
-                    });
-                options.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
-            });
+            services.AddCors();
             services.AddDbContext<EmployeeContext>(opt =>
                 opt.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddControllersWithViews();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v3", new OpenApiInfo()
@@ -70,7 +52,6 @@ namespace BarChart_fullstack
             {
                 app.UseExceptionHandler("/Error");
             }
-            //app.UseCors("AllowAll");
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -78,7 +59,7 @@ namespace BarChart_fullstack
             });
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
-            app.UseCors(options => options.AllowAnyOrigin());
+            app.UseCors();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
@@ -86,8 +67,6 @@ namespace BarChart_fullstack
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-                endpoints.MapControllers()
-                    .RequireCors(MyAllowSpecificOrigins);
             });
 
             app.UseSpa(spa =>

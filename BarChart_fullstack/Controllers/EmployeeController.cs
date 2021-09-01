@@ -19,7 +19,6 @@ namespace BarChart_fullstack.Controllers
         Stopwatch st3 = new();//Для подсчёта общего врмеени выполнения
 
         // GET: api/<EmployeeController>
-        [EnableCors("AllowOrigin")]
         [HttpGet]
         public async Task<IQueryable<Employee>> Get([FromServices] IService<Employee> service)
         {
@@ -32,7 +31,6 @@ namespace BarChart_fullstack.Controllers
         /// </summary>
         /// <param name="service">сервис обращения к контексту</param>
         /// <returns></returns>
-        [EnableCors("AllowOrigin")]
         [HttpGet]
         public async Task<List<Chart>> GetChart([FromServices] IService<Employee> service)
         {
@@ -70,7 +68,6 @@ namespace BarChart_fullstack.Controllers
         /// </summary>
         /// <param name="service">сервис обращения к контексту</param>
         /// <returns></returns>
-        [EnableCors("AllowOrigin")]
         [HttpGet]
         public async Task<double> GetRetention([FromServices] IService<Employee> service)
         {
@@ -94,7 +91,6 @@ namespace BarChart_fullstack.Controllers
         }
 
         // POST api/<EmployeeController>
-        [EnableCors("AllowOrigin")]
         [HttpPost]
         public async Task<Employee> Post([FromServices] IService<Employee> service, [FromBody] Employee report)
         {
@@ -102,7 +98,6 @@ namespace BarChart_fullstack.Controllers
         }
 
         // POST api/<EmployeeController>
-        [EnableCors("AllowOrigin")]
         [HttpDelete]
         public async Task<ActionResult> DeleteBulk(
             [FromServices] IService<Employee> service)
